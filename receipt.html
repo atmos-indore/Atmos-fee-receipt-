@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AtMOS</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 12px;
+    }
+    input[type="text"],
+    input[type="date"],
+	select,
+    input[type="number"] {
+      width: 80%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    input[type="submit"] {
+      width: 100%;
+      background-color: #1d72b8;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #145a96;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <h2>AtMOS International Kidz School<br>School Receipt Form</h2>
+    <form id="receiptForm" onsubmit="generateReceipt(event)">
+<table>     
+	 <tr>
+     <td> Date: <input type="date" id="date" required></td></tr>
+
+	 
+      <tr><td>Student Name:</td><td> <input type="text" id="name" required></td></tr>
+      <tr><td>Class: </td><td>
+	  
+	  <select id="class" required>
+    
+    <option value="Playgroup">Playgroup</option>
+    <option value="Nurseru">Nursery</option>
+    <option value="LKG">LKG</option>
+    <option value="UKG">UKG</option>
+  </select>
+  </td></tr>
+	  
+	  </table>
+<table>
+
+      <tr><td>Admission/Registration Fee: </td><td><input type="number" id="item1" value="0"></td></tr>
+      <tr><td>Caution Money (Refundable): </td><td><input type="number" id="item2" value="0"></td></tr>
+      <tr><td>Tuition Fee: </td><td><input type="number" id="item3" value="0"> </td></tr>
+      <tr><td>Mess Charges: </td><td><input type="number" id="item4" value="0"></td></tr>
+      <tr><td>Transport Service Charges: </td><td><input type="number" id="item5" value="0"></td></tr>
+	  </table>
+
+      Payment Mode:
+  <select id="paymentMode" required>
+    
+    <option value="Cash">Cash</option>
+    <option value="UPI">UPI</option>
+    <option value="Cheque">Cheque</option>
+  </select>
+<br>
+<br>
+      Remark: <input type="text" id="remark">
+
+      <input type="submit" value="Generate Receipt">
+	  * Receipt no. = (dd+mm+yy+no of letter in first name)/mm
+    </form>
+  </div>
+
+  <script>
+    function generateReceipt(event) {
+      event.preventDefault();
+/*
+      const receiptNo = document.getElementById('receipt').value;
+      const name = document.getElementById('name').value;
+      const studentClass = document.getElementById('class').value;
+      const date = document.getElementById('date').value;
+      const paymentMode = document.getElementById('paymentMode').value;
+      const remark = document.getElementById('remark').value;
+	  
+	  */  
+	  
+  
+	  const name = document.getElementById('name').value.trim();
+	  const firstName = name.split(' ')[0]; // Take only the first word
+      const alphaCount = (firstName.match(/[a-zA-Z]/g) || []).length;
+
+
+      const date = document.getElementById('date').value;
+      const dt = new Date(date);
+      const dd = dt.getDate();
+      const mm = dt.getMonth() + 1;
+      const yy = dt.getFullYear() % 100;
+      
+      const sum = dd + mm + yy + alphaCount;
+      const receiptNo = `AI/IND/2025/${(sum / mm).toFixed(2)}`;
+
+      const studentClass = document.getElementById('class').value;
+      const paymentMode = document.getElementById('paymentMode').value;
+      const remark = document.getElementById('remark').value;
+      const dateStr = dt.toLocaleDateString();
+	  
+	  
+
+      const items = [
+        { name: "Admission/Registration Fee", amount: parseFloat(document.getElementById('item1').value) || 0 },
+        { name: "Caution Money (Refundable)", amount: parseFloat(document.getElementById('item2').value) || 0 },
+        { name: "Tuition Fee", amount: parseFloat(document.getElementById('item3').value) || 0 },
+        { name: "Mess Charges", amount: parseFloat(document.getElementById('item4').value) || 0 },
+        { name: "Transport Service Charges", amount: parseFloat(document.getElementById('item5').value) || 0 }
+      ];
+
+      let total = 0;
+      let tableRows = '';
+      items.forEach((item, index) => {
+  tableRows += `<tr><td>${index + 1}</td><td>${item.name}</td><td>₹${item.amount.toFixed(2)}</td></tr>`;
+  total += item.amount;
+});
+
+      const receiptHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 10px; text-align: center; position: relative; }
+            .receipt {
+              background: white; padding: 10px; max-width: 550px; margin: auto;
+              border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: left; position: relative;
+            }
+            h2, h4 { text-align: center; margin: 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+            
+            th, td { padding: 8px 12px; }
+            th { background-color: #f0f0f0; }
+            .print-btn { text-align: center; margin-top: 30px; }
+            button {
+              background: #28a745; color: white; padding: 10px 20px;
+              border: none; font-size: 16px; border-radius: 5px; cursor: pointer;
+            }
+            button:hover { background: #218838; }
+            .seal {
+              position: absolute;
+              bottom: 50px;
+              right: 50px;
+              opacity: 0.6;
+            }
+            .seal img {
+              width: 100px;
+              height: auto;
+            }
+          </style>
+        </head>
+        <body>
+		
+
+          <div class="receipt">
+		  <table>
+		
+		<tr><td width="20%">
+  <center>
+              <img src="logo.jpg" alt="School Seal" align="absmiddle" width="100px">
+			  </center>
+  </td><td>
+            <h2>AtMOS International Kidz School</h2>
+            <h4><i>(Run by Atmosphere Educational Society)</i></h4>
+            <center><span style="text-align:center;color:#A52A2A"><strong>School Reg. No:</strong> PS/461489</span></center>
+			</td></tr>
+			</table>
+
+<h2 style="text-align:center;color:#003399">Payment Receipt</h2>
+
+<table border=1>
+            <tr>
+			<td><strong>Date:</strong> ${date}</td>
+			<td><strong>Receipt No:</strong> ${receiptNo}</td></tr>
+			
+            <tr>
+			<td><strong>Class:</strong> ${studentClass}</td>
+			<td><strong>Student Name:</strong> ${name}</td>
+            </tr>
+			
+			<tr>
+			</table>
+			
+           <table border=1>
+              <tr><th>Sr. No.</th><th>Particular</th><th>Amount</th></tr>
+              ${tableRows}
+              <tr><td colspan="2"><strong>Total</strong></td><td><strong>₹${total.toFixed(2)}</strong></td></tr>
+            </table>
+			
+			<table border=1>
+			
+			<tr><td colspan="2"><strong>Payment Mode:</strong> ${paymentMode}</td></tr>
+			<tr><td colspan="2"><strong>Remark:</strong> ${remark}</td></tr>
+            
+			</table>
+			
+			<table border=1>
+			<tr>
+			<td width="70%"><strong>
+			  <strong>Contact:</strong><br>
+              AtMOS House, B 67, Samarth Park Colony,<br>
+              Gram Umaria, Tehsil Mhow, District Indore<br>
+              Phone: 62671-63515<br>
+              Email: atmoseducationalsociety@gmail.com<br>
+			  </strong></td>
+			<td>
+			<center>
+              <img src="stamp.jpg" alt="School Seal" align="absmiddle" width="100px">
+			  </center>
+            </td></tr>
+			
+			</table>
+			
+   
+          </div>
+		  
+		  
+            <div class="print-btn">
+              <button onclick="window.print()">Print / Save as PDF</button>
+            </div>
+        </body>
+        </html>
+      `;
+
+      const receiptWindow = window.open('', '_blank');
+      receiptWindow.document.open();
+      receiptWindow.document.write(receiptHTML);
+      receiptWindow.document.close();
+    }
+  </script>
+
+</body>
+</html>
